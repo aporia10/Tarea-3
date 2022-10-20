@@ -5,7 +5,6 @@
 #include <string.h>
 #include <math.h>
 #include <ctype.h>
-#include <assert.h>
 #include "hashmap.h"
 #include "list.h"
 #include "treemap.h"
@@ -15,24 +14,32 @@ char* quitarSalto(char* linea);
 
 typedef struct{
   char nombre[30];
-  char fecha[30];
-  void* valoracion;
-  void* precio;
+  char fecha[11];
+  int valoracion;
+  int precio;
 }Videojuego;
 
 
-
 int main(void) {
+  int opcion, auxOpcion, j, cont;
   
-  int opcion;
-  Pair *aux;
   Videojuego *v;
+
+  void *punteroV, *punteroP;
+
+  char *i, linea[11];
   
   HashMap* mapaJuegos = createMap(100);
+  HashMap* mapaFechas = createMap(100);
+  List *listP, *listAUXp, *listV, *listAUXv, *auxListas, *listaFec, *lAuxF;
+  PairTree *auxValoracion, *auxPrecio, *auxArbol;
+  Pair *aux, *auxFec;
+  
+  
   TreeMap* mapPrecio = createTreeMap(lower_than_string);
   TreeMap* mapValoracion = createTreeMap(lower_than_string);
 
-  
+  auxListas = NULL;
   
   while(opcion!=0)
   {
@@ -59,48 +66,168 @@ int main(void) {
     switch(opcion)
     {
       case 2://agregar
-      v = (Videojuego*) malloc(sizeof(Videojuego));
+        v = (Videojuego*) malloc(sizeof(Videojuego));
         
-      printf("Ingrese nombre del videojuego: ");
-      fgets(v->nombre,30,stdin);
-      strcpy(v->nombre, quitarSalto(v->nombre));
+        printf("Ingrese nombre del videojuego: ");
+        fgets(v->nombre,30,stdin);
+        strcpy(v->nombre, quitarSalto(v->nombre));
         
-      printf("Ingrese año de salida: ");
-      fgets(v->fecha,30,stdin);
-      strcpy(v->fecha, quitarSalto(v->fecha));
+        printf("Ingrese año de salida: ");
+        fgets(v->fecha,30,stdin);
+        strcpy(v->fecha, quitarSalto(v->fecha));
         
-      printf("Ingrese valoración del videojuego: ");
-      scanf("%i", (int*)&v->valoracion);
-        
-      printf("Ingrese precio del videojuego: ");
-      scanf("%i",(int*)&v->precio);
-        
-      void *precio;
-      precio = v->precio;
-      aux  = searchMap(mapaJuegos, v->nombre);
-      if(aux == NULL)
-      {
-        insertMap(mapaJuegos, v->nombre, v);
+        printf("Ingrese valoración del videojuego: ");
+        scanf("%i", &v->valoracion);
+        getchar(); 
+        printf("Ingrese precio del videojuego: ");
+        scanf("%i", &v->precio);
+        getchar(); 
 
-        insertTreeMap(mapPrecio, v->precio, v->nombre);
-        insertTreeMap(mapValoracion,v->valoracion, v->nombre);
+        punteroV = &v->valoracion;
+        punteroP = &v->precio;
         
-      }
+        aux  = searchMap(mapaJuegos, v->nombre);
+        if(aux == NULL)
+        {
+          insertMap(mapaJuegos, v->nombre, v);
+          cont =0;
+          //fecha dd/mm/aaaa
+          for(j = 6; j<=9; j++)
+          {
+            strcpy(&linea[cont], &v->fecha[j]);
+            cont++;
+          }
+          if(searchMap(mapaFechas, linea) == NULL)
+          {
+            listaFec = createList();
+            pushFront(listaFec, v->nombre);
+
+            insertMap(mapaFechas, linea, listaFec);
+          }
+          else
+          {
+            auxFec = searchMap(mapaFechas, linea);
+            lAuxF = auxFec->value;
+
+            pushFront(lAuxF, v->nombre);
+
+            auxFec->value = lAuxF;
+          }
+          
+          if(searchTreeMap(mapPrecio, punteroP) == NULL)
+          {
+           
+            listP = createList();
+            pushFront(listP, v->nombre);
+            
+            insertTreeMap(mapPrecio, punteroP, listP);
+          }
+          else
+          {
+            auxPrecio = searchTreeMap(mapPrecio, punteroP);
+            
+            listAUXp = auxPrecio->value;
+            pushFront(listAUXp, v->nombre);
+            
+            auxPrecio->value = listAUXp;
+          }
+          
+          if(searchTreeMap(mapValoracion, punteroV) == NULL)
+          {
+            listV = createList();
+            pushFront(listV, v->nombre);
+            
+            insertTreeMap(mapValoracion, punteroV, listV);
+          }
+          else
+          {
+            auxValoracion = searchTreeMap(mapValoracion, punteroV);
+            
+            listAUXv = auxValoracion->value;
+            pushFront(listAUXv, v->nombre);
+            
+            auxValoracion->value = listAUXv;
+          }
+          
+          listAUXv = NULL;
+          listAUXp = NULL;
+          auxValoracion = NULL; 
+          auxPrecio = NULL;
+          punteroP = NULL;
+          punteroV = NULL;
+          listV = NULL;
+          listP = NULL;
+          auxFec = NULL;
+          lAuxF = NULL;
+        } 
+      break;
+      case 3:
+        printf("Mostrar de MENOR A MAYOR, ingrese: 0\n");
+        printf("Mostrar de MAYOR A MENOR, ingrese: 1\n");
+          
+        fflush(stdin);
+        scanf("%i",&auxOpcion);
+        getchar(); 
+        printf("\n");
         
+        for(auxArbol = firstTreeMap(mapPrecio); auxArbol != NULL; auxArbol = nextTreeMap(mapPrecio))
+        {
+          listAUXp = auxArbol->value;
+          if(auxOpcion == 0)
+          {
+            for(i = firstList(listAUXp); i != NULL; i = nextList(listAUXp))
+            {
+              aux  = searchMap(mapaJuegos, i);
+              if(aux != NULL)
+              {
+                v = aux->value;
+              
+                printf("%s: %i\n", (char *)i, v->precio);
+              }
+            }
+          }
+          else 
+          {
+            if(auxOpcion == 1)
+            {
+              for(i = firstList(listAUXp); i != NULL; i = nextList(listAUXp))
+              {
+                 
+                if(auxListas == NULL)
+                {
+                  auxListas = createList();
+                  pushFront(auxListas, i);
+                }
+                else
+                {
+                  pushFront(auxListas, i);
+                }
+              }
+            }
+          }
+        }
+        if(auxOpcion == 1)
+        {
+          for(i = firstList(auxListas); i != NULL; i = nextList(auxListas))
+          {
+            aux  = searchMap(mapaJuegos, i);
+            if(aux != NULL)
+            {
+
+              v = aux->value;
+
+              printf("%s: %i\n", (char *)i, v->precio);
+            }
+          }
+        }
+        printf("\n***Datos Mostrados***\n");
+        auxArbol = NULL;
+        auxListas = NULL;
+        listAUXp = NULL;  
       break;
     }
   }
-
-  
   return 0;
-}
-
-int lower_than_string(void* key1, void* key2)
-{
-    char* k1=(char*) key1;
-    char* k2=(char*) key2;
-    if(strcmp(k1,k2)<0) return 1;
-    return 0;
 }
 
 char* quitarSalto(char* linea)
@@ -111,4 +238,3 @@ char* quitarSalto(char* linea)
   }
   return(linea);
 }
-    
