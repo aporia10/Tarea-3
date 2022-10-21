@@ -225,6 +225,35 @@ int main(void) {
         auxListas = NULL;
         listAUXp = NULL;  
       break;
+      case 4:
+        printf("Ingrese la valoración mínima: \n");
+          
+        fflush(stdin);
+        scanf("%i",&auxOpcion);
+        getchar(); 
+        printf("\n");
+
+        punteroV = &auxOpcion;
+        
+        for(auxArbol = upperBound(mapValoracion, punteroV); auxArbol != NULL; auxArbol = nextTreeMap(mapValoracion))
+        {
+          listAUXv = auxArbol->value;
+          for(i = firstList(listAUXv); i != NULL; i = nextList(listAUXv))
+          {
+            aux  = searchMap(mapaJuegos, i);
+            if(aux != NULL)
+            {
+              
+              v = aux->value;
+              
+              printf("%s: %i\n", (char *)i, v->valoracion);
+            }
+          }
+        }
+        punteroV = NULL;
+        listAUXv = NULL;
+        auxArbol = NULL;
+      break;
     }
   }
   return 0;
