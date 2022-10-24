@@ -20,7 +20,7 @@ gcc -g main.c list.c hashmap.c treemap.c -o tarea_3
 ```
 ---
 ## Observaciones de la Tarea 3
-- no
+- No todavía 
 
 ---
 ## COEVALUACION:
@@ -31,7 +31,7 @@ Al igual que la tarea anterior pocas veces coincidimos los 3 para trabajar junto
 ### Luciano Cubillos Bugueño:
 No pudimos juntarnos de manera online para avanzar la tarea pero nos juntamos un par de veces en el laboratorio para avanzar con la tarea los tres juntos o de a dos en algunos momentos.
 ### Vicente Montiel Torres:
-ola
+
 
 --- 
 ## Puntos a Favor o en Contra
