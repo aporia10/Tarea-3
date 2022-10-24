@@ -46,23 +46,14 @@ int main(void) {
     do{
       /*Menú que muestra en pantalla las opciones que podemos 
       realizar*/
-      printf("\n Introduzca una opción (1-9)");
-      printf("\n 1.Importar archivo de juegos");
-      printf("\n 2.Agregar juego");
-      printf("\n 3.Mostrar juegos por precio");
-      printf("\n 4.Filtrar juegos por valoración");
-      printf("\n 5.Mostrar juegos del año");
-      printf("\n 6.Buscar juego");
-      printf("\n 7.Exportar datos");
-      printf("\n 0.Salir");
-      printf("\n");
+     mostrarMenu();
   
       fflush(stdin);
       scanf("%i",&opcion);
       getchar(); 
       printf("\n");
     }while (opcion>10 && opcion<1);
-  
+    
     switch(opcion)
     {
       case 2://agregar
@@ -254,6 +245,23 @@ int main(void) {
         listAUXv = NULL;
         auxArbol = NULL;
       break;
+      case 5:
+        printf("Ingrese un año: \n");
+        fflush(stdin);
+        fgets(linea,30,stdin);
+        strcpy(linea, quitarSalto(linea));
+
+        printf("Los juegos del año %s son:\n", (char *)linea);
+        aux = searchMap(mapaFechas, linea);
+        if(aux != NULL)
+        {
+          for(i = firstList(aux->value); i != NULL; i = nextList(aux->value))
+          {
+            printf("%s\n", (char *)i);
+          }
+        }
+        printf("Juegos de este año mostrados\n");
+      break;
     }
   }
   return 0;
@@ -266,4 +274,19 @@ char* quitarSalto(char* linea)
     linea[strlen(linea) - 1] = '\0';
   }
   return(linea);
+}
+void mostrarMenu()
+{
+  printf("\n Introduzca una opción (1-9)");
+  printf("\n 1.Importar archivo de juegos");
+  printf("\n 2.Agregar juego");
+  printf("\n 3.Mostrar juegos por precio");
+  printf("\n 4.Filtrar juegos por valoración");
+  printf("\n 5.Mostrar juegos del año");
+  printf("\n 6.Buscar juego");
+  printf("\n 7.Exportar datos");
+  printf("\n 0.Salir");
+  printf("\n");
+
+  return;
 }
